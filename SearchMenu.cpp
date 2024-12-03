@@ -1,5 +1,7 @@
 #include "SearchMenu.h"
 
+// Similar to the Button constructor
+// Creates SFML elements for rendering the object
 SearchMenu::SearchWidget::SearchWidget( std::string string, int index, sf::Font& font )
 {
 	rect = sf::RectangleShape( sf::Vector2f( 300, 40 ) );
@@ -13,6 +15,7 @@ SearchMenu::SearchWidget::SearchWidget( std::string string, int index, sf::Font&
     text.setPosition( sf::Vector2f( 250, 120 + 40 * index ) );
 }
 
+// Drawing requires drawing both SFML shapes
 void SearchMenu::SearchWidget::draw( sf::RenderWindow* window )
 {
 	window->draw( rect );
@@ -23,18 +26,21 @@ SearchMenu::SearchMenu( WindowData* window )
 {
 	this->window = window;
 
+    // Create a SFML widget for all the enterable parameters
     addWidget( "Pass attempts" );
     addWidget( "Complete passes" );
     addWidget( "Incomplete passes" );
 }
 
-void SearchMenu::update()
-{
-    for ( auto widget : widgets )
-        widget->draw( window->window );
-}
-
+// Shorthand for creating a new widget
 void SearchMenu::addWidget( std::string text )
 {
     widgets.push_back( new SearchWidget( text, widgets.size(), window->font ) );
+}
+
+void SearchMenu::update()
+{
+    // Render the menu elements
+    for ( auto widget : widgets )
+        widget->draw( window->window );
 }
