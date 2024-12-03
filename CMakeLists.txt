@@ -12,7 +12,9 @@ add_executable(DSAProj3 main.cpp
         StatsDatabase.cpp
         Window.h
         Window.cpp
-        Widgets.h
-        Widgets.cpp)
+        SearchMenu.h
+        SearchMenu.cpp
+        MainMenu.h
+        MainMenu.cpp)
 
 target_link_libraries(DSAProj3 sfml-system sfml-window sfml-graphics sfml-audio)
