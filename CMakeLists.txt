@@ -1,8 +1,18 @@
-cmake_minimum_required(VERSION 3.27)
+cmake_minimum_required(VERSION 3.2)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 project(DSAProj3)
 
-set(CMAKE_CXX_STANDARD 17)
+set(SFML_DIR "C:/Users/colli/CLionProjects/SFML/lib/cmake/SFML")
+find_package(SFML 2.5.1 COMPONENTS system window graphics audio REQUIRED)
 
 add_executable(DSAProj3 main.cpp
         StatsDatabase.h
-        StatsDatabase.cpp)
+        StatsDatabase.cpp
+        Window.h
+        Window.cpp
+        Widgets.h
+        Widgets.cpp)
+
+target_link_libraries(DSAProj3 sfml-system sfml-window sfml-graphics sfml-audio)

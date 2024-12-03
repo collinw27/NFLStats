@@ -251,6 +251,9 @@ DSAProj3_IS_TOP_LEVEL:STATIC=ON
 //Value Computed by CMake
 DSAProj3_SOURCE_DIR:STATIC=C:/Users/colli/CLionProjects/DSAProj3
 
+//Path to a file.
+SFML_DOC_DIR:PATH=SFML_DOC_DIR-NOTFOUND
+
 
 ########################
 # INTERNAL cache entries
