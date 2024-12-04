@@ -41,6 +41,13 @@ void SearchMenu::SearchWidget::setSelected( bool selected )
     rect.setFillColor( selected ? sf::Color( 150, 255, 150 ) : sf::Color( 150, 150, 150 ) );
 }
 
+// Returns the weight to be used when sorting
+// 0 = unselected, 1 = selected, other = advanced
+int SearchMenu::SearchWidget::getWeight()
+{
+    return ( selected ) ? 1 : 0;
+}
+
 // + = + = + = + = + = + = + = + = + = +
 //         SEARCH MENU CLASS
 // + = + = + = + = + = + = + = + = + = +
@@ -98,4 +105,14 @@ void SearchMenu::update()
     for ( auto widget : widgets )
         widget->draw( window->window );
     searchButton->draw( window->window );
+}
+
+// Return the weights for each parameter based on what the user selected
+// This is passed into the database and used in the sorting functions
+std::vector<int> SearchMenu::getWeights()
+{
+    std::vector<int> output;
+    for ( auto widget : widgets )
+        output.push_back( widget->getWeight() );
+    return output;
 }

@@ -24,6 +24,7 @@ class SearchMenu
 		void draw( sf::RenderWindow* window );
 		bool wasClicked( sf::Vector2i clickPos );
 		void setSelected( bool selected );
+		int getWeight();
 	};
 
 	WindowData* window;
@@ -48,4 +49,5 @@ public:
 
 	SearchMenu( WindowData* window );
     void update();
+    std::vector<int> getWeights();
 };

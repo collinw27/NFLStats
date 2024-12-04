@@ -94,10 +94,10 @@ void Window::update()
     {
         searchMenu->update();
 
-        // Search for games if necessary
+        // Search for the selected games
         if ( searchMenu->action == SearchMenu::GAMES_MENU )
         {
-            std::vector<int> weights { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            std::vector<int> weights = searchMenu->getWeights();
             database->buildHeap( weights );
             std::vector<GameStats*> topGames = database->extractGames( 10 );
             delete gamesMenu;
