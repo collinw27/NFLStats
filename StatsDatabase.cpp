@@ -112,12 +112,13 @@ StatsDatabase::StatsDatabase( const std::string& filename )
 		Player* player = nullptr;
 		if ( players.find( playerID ) == players.end() )
 		{
-			player = new Player { playerID, playerName, std::vector<GameStats*>{}, playerHeight, playerWeight };
+			player = new Player { playerID, playerName, std::vector<GameStats*>{}, std::unordered_set<std::string> {}, playerHeight, playerWeight };
 			players[ playerID ] = player;
 		}
 		else
 			player = players[ playerID ];
 
+		// Create a new GameStats object for this line of data
 		GameStats* game = new GameStats {
 			player,
 			team,
@@ -146,8 +147,12 @@ StatsDatabase::StatsDatabase( const std::string& filename )
 			totalYards,
 			opponent
 		};
+
+		// Store the game object
 		games.push_back( game );
 		player->games.push_back( game );
+
+		// For debugging
         if ( i++ % 10000 == 9999 )
         	std::cout << "Loaded " << i << " games" << std::endl;
     }
@@ -155,6 +160,99 @@ StatsDatabase::StatsDatabase( const std::string& filename )
     std::cout << "Done! (" << i << " games total)" << std::endl;
 }
 
+// Creates a new heap using the weights passed in
+void StatsDatabase::buildHeap( std::vector<int>& weightMatrix )
+{
+	// Clear the old heap, if one existed
+	delete[] gameHeap;
+	heapSize = 0;
+	gameHeap = new std::pair<GameStats*, int>[ games.size() ];
+
+	// Add every game to the heap
+	for ( GameStats* gamePtr : games )
+	{
+		// Start by appending it to the last slot in the heap
+		std::pair<GameStats*, int> game { gamePtr, getGameScore( gamePtr, weightMatrix ) };
+		gameHeap[ heapSize ] = game;
+
+		// Continue moving the element upward while its score is greater than its parent's
+		int child = heapSize++;
+		int parent = ( child - 1 ) / 2;
+		while ( parent >= 0 && gameHeap[ parent ].second < gameHeap[ child ].second )
+		{
+			std::pair<GameStats*, int> temp = gameHeap[ parent ];
+			gameHeap[ parent ] = gameHeap[ child ];
+			gameHeap[ child ] = temp;
+			child = parent;
+			parent = ( child - 1 ) / 2;
+		}
+	}
+}
+
+// Totals the game's stats multiplied by the user-defined weights
+int StatsDatabase::getGameScore( GameStats* game, std::vector<int>& weightMatrix )
+{
+	return (
+		game->passAttempts * weightMatrix[0] +
+		game->completedPasses * weightMatrix[1] +
+		game->incompletePasses * weightMatrix[2] +
+		game->passingYards * weightMatrix[3] +
+		game->passingAirYards * weightMatrix[4] +
+		game->passTD * weightMatrix[5] +
+		game->interceptions * weightMatrix[6] +
+		game->targets * weightMatrix[7] +
+		game->receptions * weightMatrix[8] +
+		game->receivingYards * weightMatrix[9] +
+		game->receivingAirYards * weightMatrix[10] +
+		game->yardsAfterCatch * weightMatrix[11] +
+		game->receptionTD * weightMatrix[12] +
+		game->rushAttempts * weightMatrix[13] +
+		game->rushingYards * weightMatrix[14] +
+		game->rushingTD * weightMatrix[15] +
+		game->touches * weightMatrix[16] +
+		game->totalTD * weightMatrix[17] +
+		game->totalYards * weightMatrix[18]
+	);
+}
+
+// Extracts the highest scoring n games remaining in the heap
+std::vector<GameStats*> StatsDatabase::extractGames( int count )
+{
+	std::vector<GameStats*> output {};
+
+	// Run for the number of iterations, or until there are no games left
+	for ( int i = 0; ( i < count && heapSize > 0 ); ++i )
+	{
+		output.push_back( gameHeap[0].first );
+		gameHeap[0] = gameHeap[ --heapSize ];
+		int parent = 0;
+		int child1 = 1;
+		int child2 = 2;
+		while ( ( child1 < heapSize && gameHeap[ child1 ].second > gameHeap[ parent ].second )
+			|| ( child2 < heapSize && gameHeap[ child2 ].second > gameHeap[ parent ].second ) )
+		{
+			// Find the greater child (choosing the greater child if applicable)
+			int minChild;
+			if ( child1 < heapSize && child2 < heapSize )
+				minChild = ( gameHeap[ child1 ].second > gameHeap[ child2 ].second ) ? child1 : child2;
+			else
+				minChild = ( child1 < heapSize ) ? child1 : child2;
+
+			// Swap the values
+			// Then, prepare the pointers for the next iteration
+            std::pair<GameStats*, int> temp = gameHeap[ parent ];
+			gameHeap[ parent ] = gameHeap[ minChild ];
+			gameHeap[ minChild ] = temp;
+			parent = minChild;
+			child1 = parent * 2 + 1;
+			child2 = parent * 2 + 2;
+		}
+	}
+
+	return output;
+}
+
+// Shorthand to use std::getline and convert to integer
 int StatsDatabase::getlineInt( std::ifstream& file, char delimiter )
 {
 	std::string buffer;

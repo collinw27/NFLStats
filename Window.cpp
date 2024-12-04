@@ -50,6 +50,13 @@ Window::Window()
 	// Create the menus, even the ones that aren't open yet
 	mainMenu = new MainMenu( windowData );
 	searchMenu = new SearchMenu( windowData );
+
+    // Create the database
+    database = new StatsDatabase( "weekly_player_data_full.csv" );
+    std::vector<int> weights { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    database->buildHeap( weights );
+    for ( auto game : database->extractGames( 10 ) )
+    	std::cout << game->passingAirYards << std::endl;
 }
 
 // Used by the main loop to decide when to end the program
@@ -96,10 +103,12 @@ void Window::update()
     }
 
     // Search menu state:
-    // ...
+    // Transition to main menu if "Confirm" is clicked
     else if ( state == SEARCH_MENU )
     {
 	    searchMenu->update();
+	    if ( searchMenu->action == SearchMenu::MAIN_MENU )
+	    	state = MAIN_MENU;
     }
 
     // Display the buffered frame

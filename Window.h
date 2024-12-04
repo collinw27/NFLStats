@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include "StatsDatabase.h"
 
 // Forward declarations for different menu types
 // (The header files rely on this file, so they can't be #included here)
@@ -50,6 +51,7 @@ class Window
 
 	State state = MAIN_MENU;
 	WindowData* windowData;
+	StatsDatabase* database;
 
 	// Different menus
 	// A reference to them is stored even when they're not displayed/updated
