@@ -77,8 +77,8 @@ build CMakeFiles/DSAProj3.dir/SearchMenu.cpp.obj: CXX_COMPILER__DSAProj3_unscann
   OBJECT_DIR = CMakeFiles\DSAProj3.dir
   OBJECT_FILE_DIR = CMakeFiles\DSAProj3.dir
 
-build CMakeFiles/DSAProj3.dir/MainMenu.cpp.obj: CXX_COMPILER__DSAProj3_unscanned_Debug C$:/Users/colli/CLionProjects/DSAProj3/MainMenu.cpp || cmake_object_order_depends_target_DSAProj3
-  DEP_FILE = CMakeFiles\DSAProj3.dir\MainMenu.cpp.obj.d
+build CMakeFiles/DSAProj3.dir/GamesMenu.cpp.obj: CXX_COMPILER__DSAProj3_unscanned_Debug C$:/Users/colli/CLionProjects/DSAProj3/GamesMenu.cpp || cmake_object_order_depends_target_DSAProj3
+  DEP_FILE = CMakeFiles\DSAProj3.dir\GamesMenu.cpp.obj.d
   FLAGS = -g -std=gnu++11 -fdiagnostics-color=always
   INCLUDES = -isystem C:/Users/colli/CLionProjects/SFML/include
   OBJECT_DIR = CMakeFiles\DSAProj3.dir
@@ -92,7 +92,7 @@ build CMakeFiles/DSAProj3.dir/MainMenu.cpp.obj: CXX_COMPILER__DSAProj3_unscanned
 #############################################
 # Link the executable DSAProj3.exe
 
-build DSAProj3.exe: CXX_EXECUTABLE_LINKER__DSAProj3_Debug CMakeFiles/DSAProj3.dir/main.cpp.obj CMakeFiles/DSAProj3.dir/StatsDatabase.cpp.obj CMakeFiles/DSAProj3.dir/Window.cpp.obj CMakeFiles/DSAProj3.dir/SearchMenu.cpp.obj CMakeFiles/DSAProj3.dir/MainMenu.cpp.obj | C$:/Users/colli/CLionProjects/SFML/lib/libsfml-graphics-d.a C$:/Users/colli/CLionProjects/SFML/lib/libsfml-audio-d.a C$:/Users/colli/CLionProjects/SFML/lib/libsfml-window-d.a C$:/Users/colli/CLionProjects/SFML/lib/libsfml-system-d.a
+build DSAProj3.exe: CXX_EXECUTABLE_LINKER__DSAProj3_Debug CMakeFiles/DSAProj3.dir/main.cpp.obj CMakeFiles/DSAProj3.dir/StatsDatabase.cpp.obj CMakeFiles/DSAProj3.dir/Window.cpp.obj CMakeFiles/DSAProj3.dir/SearchMenu.cpp.obj CMakeFiles/DSAProj3.dir/GamesMenu.cpp.obj | C$:/Users/colli/CLionProjects/SFML/lib/libsfml-graphics-d.a C$:/Users/colli/CLionProjects/SFML/lib/libsfml-audio-d.a C$:/Users/colli/CLionProjects/SFML/lib/libsfml-window-d.a C$:/Users/colli/CLionProjects/SFML/lib/libsfml-system-d.a
   FLAGS = -g
   LINK_LIBRARIES = C:/Users/colli/CLionProjects/SFML/lib/libsfml-graphics-d.a  C:/Users/colli/CLionProjects/SFML/lib/libsfml-audio-d.a  C:/Users/colli/CLionProjects/SFML/lib/libsfml-window-d.a  C:/Users/colli/CLionProjects/SFML/lib/libsfml-system-d.a  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\DSAProj3.dir

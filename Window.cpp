@@ -1,6 +1,6 @@
 #include "Window.h"
-#include "MainMenu.h"
 #include "SearchMenu.h"
+#include "GamesMenu.h"
 
 // + = + = + = + = + = + = + = + = + = +
 //            BUTTON CLASS
@@ -48,15 +48,10 @@ Window::Window()
 	windowData->font.loadFromFile( "res/Arial.ttf" );
 
 	// Create the menus, even the ones that aren't open yet
-	mainMenu = new MainMenu( windowData );
 	searchMenu = new SearchMenu( windowData );
 
     // Create the database
     database = new StatsDatabase( "weekly_player_data_full.csv" );
-    std::vector<int> weights { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    database->buildHeap( weights );
-    for ( auto game : database->extractGames( 10 ) )
-    	std::cout << game->passingAirYards << std::endl;
 }
 
 // Used by the main loop to decide when to end the program
@@ -93,22 +88,29 @@ void Window::update()
     // Start drawing the next frame
     windowData->window->clear( sf::Color::White );
 
-    // Main menu state:
-    // Transition to search menu if "Modify Search" is clicked
-    if ( state == MAIN_MENU )
+    // Search menu state:
+    // ...
+    if ( state == SEARCH_MENU )
     {
-	    mainMenu->update();
-	    if ( mainMenu->action == MainMenu::SEARCH_MENU )
-	    	state = SEARCH_MENU;
+        searchMenu->update();
+
+        // Search for games if necessary
+        if ( searchMenu->action == SearchMenu::GAMES_MENU )
+        {
+            std::vector<int> weights { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            database->buildHeap( weights );
+            std::vector<GameStats*> topGames = database->extractGames( 10 );
+            delete gamesMenu;
+            gamesMenu = new GamesMenu( windowData, topGames );
+            state = GAMES_MENU;
+        }
     }
 
-    // Search menu state:
-    // Transition to main menu if "Confirm" is clicked
-    else if ( state == SEARCH_MENU )
+    // Games menu state:
+    // ...
+    else if ( state == GAMES_MENU )
     {
-	    searchMenu->update();
-	    if ( searchMenu->action == SearchMenu::MAIN_MENU )
-	    	state = MAIN_MENU;
+        gamesMenu->update();
     }
 
     // Display the buffered frame

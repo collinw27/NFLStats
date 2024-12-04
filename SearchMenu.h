@@ -28,17 +28,20 @@ class SearchMenu
 
 	WindowData* window;
     std::vector<SearchWidget*> widgets;
-    Button* confirmButton;
+    Button* searchButton;
 
     void addWidget( std::string text );
 
 public:
 
-	// See "MainMenu.h" for an explanation of the Action enum
+	// The action variable reports to the window whether its state
+	// needs to be updated
+	// This allows the menu to change the state of the program without
+	// needing to have a direct reference to the Window object
 	enum Action
 	{
 		NO_ACTION,
-		MAIN_MENU
+		GAMES_MENU
 	};
 
 	Action action = NO_ACTION;

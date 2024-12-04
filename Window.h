@@ -6,8 +6,8 @@
 
 // Forward declarations for different menu types
 // (The header files rely on this file, so they can't be #included here)
-class MainMenu;
 class SearchMenu;
+class GamesMenu;
 
 // A simple button with text that registers click events
 // Defined here so all menu types have access to it
@@ -45,18 +45,17 @@ class Window
 	// State stores which menu is currently displayed
 	enum State
 	{
-		MAIN_MENU,
-		SEARCH_MENU
+		SEARCH_MENU,
+		GAMES_MENU
 	};
 
-	State state = MAIN_MENU;
+	State state = SEARCH_MENU;
 	WindowData* windowData;
 	StatsDatabase* database;
 
 	// Different menus
-	// A reference to them is stored even when they're not displayed/updated
-	MainMenu* mainMenu;
 	SearchMenu* searchMenu;
+	GamesMenu* gamesMenu = nullptr;
 
 public:
 

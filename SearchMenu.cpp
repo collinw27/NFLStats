@@ -8,7 +8,7 @@
 // Creates SFML elements for rendering the object
 SearchMenu::SearchWidget::SearchWidget( std::string string, int index, sf::Font& font )
 {
-    bounds = sf::IntRect( 100, 100 + 40 * index, 300, 40 );
+    bounds = sf::IntRect( 640 + 405 * ( index / 10 - 1 ), 100 + 40 * ( index % 10 ), 400, 40 );
 
 	rect = sf::RectangleShape( sf::Vector2f( bounds.width, bounds.height ) );
     rect.setPosition( sf::Vector2f( bounds.left, bounds.top ) );
@@ -18,7 +18,7 @@ SearchMenu::SearchWidget::SearchWidget( std::string string, int index, sf::Font&
     text.setFillColor( sf::Color::Black );
 	sf::FloatRect textRect = text.getLocalBounds();
 	text.setOrigin( textRect.left + textRect.width / 2.f, textRect.top + textRect.height / 2.f );
-    text.setPosition( sf::Vector2f( bounds.left + 150, bounds.top + 20 ) );
+    text.setPosition( sf::Vector2f( bounds.left + 200, bounds.top + 20 ) );
 }
 
 // Drawing requires drawing both SFML shapes
@@ -53,9 +53,25 @@ SearchMenu::SearchMenu( WindowData* window )
     addWidget( "Pass attempts" );
     addWidget( "Complete passes" );
     addWidget( "Incomplete passes" );
+    addWidget( "Passing yards" );
+    addWidget( "Passing air yards" );
+    addWidget( "Passing TDs" );
+    addWidget( "Interceptions" );
+    addWidget( "Targets" );
+    addWidget( "Receptions" );
+    addWidget( "Receiving yards" );
+    addWidget( "Receiving air yards" );
+    addWidget( "Yards after catch" );
+    addWidget( "Reception TDs" );
+    addWidget( "Rush attempts" );
+    addWidget( "Rushing yards" );
+    addWidget( "Rushing TDs" );
+    addWidget( "Touches" );
+    addWidget( "Total TDs" );
+    addWidget( "Total yards" );
 
     // Create a button to confirm changes & exit this menu
-    confirmButton = new Button( sf::IntRect( 640 - 150, 500 - 40, 300, 80 ), sf::Color( 100, 255, 100 ), "Confirm", window->font );
+    searchButton = new Button( sf::IntRect( 640 - 150, 550 - 40, 300, 80 ), sf::Color( 100, 255, 100 ), "Search", window->font );
 }
 
 // Shorthand for creating a new widget
@@ -70,16 +86,16 @@ void SearchMenu::update()
 
     // Select only the widget that was clicked
     if ( !window->clicks.empty() )
-        for ( auto widget : widgets )
-            widget->setSelected( widget->wasClicked( window->clicks[0] ) );
-
-    // Signal the window to change state if the button is clicked
-    for ( auto click : window->clicks )
-        if ( confirmButton->wasClicked( click ) )
-            action = MAIN_MENU;
+        if ( searchButton->wasClicked( window->clicks[0] ) )
+            action = GAMES_MENU;
+        else
+        {
+            for ( auto widget : widgets )
+                widget->setSelected( widget->wasClicked( window->clicks[0] ) );
+        }
 
     // Render the menu elements
     for ( auto widget : widgets )
         widget->draw( window->window );
-    confirmButton->draw( window->window );
+    searchButton->draw( window->window );
 }
