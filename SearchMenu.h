@@ -14,7 +14,11 @@ class SearchMenu
 		sf::IntRect bounds;
 		sf::RectangleShape rect;
 		sf::Text text;
-		bool selected = false;
+		sf::Text weightText;
+		int weight = 0;
+
+		// Helps with entering text
+		bool typingReset = true;
 
 	public:
 
@@ -22,14 +26,17 @@ class SearchMenu
 
 		// Control methods
 		void draw( sf::RenderWindow* window );
-		bool wasClicked( sf::Vector2i clickPos );
-		void setSelected( bool selected );
+		bool tryClick( sf::Vector2i clickPos );
 		int getWeight();
+		void enterText( std::vector<sf::Keyboard::Key>& keys );
 	};
 
 	WindowData* window;
     std::vector<SearchWidget*> widgets;
-    Button* searchButton;
+    SearchWidget* typingWidget;
+
+    // Buttons
+    Button* searchGamesButton;
 
     void addWidget( std::string text );
 

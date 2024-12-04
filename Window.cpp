@@ -7,7 +7,7 @@
 // + = + = + = + = + = + = + = + = + = +
 
 // Store the bounds rect for easy click detection
-Button::Button( sf::IntRect bounds, sf::Color color, std::string string, sf::Font& font ) : bounds{ bounds }
+Button::Button( sf::IntRect bounds, sf::Color color, std::string string, sf::Font& font, int size ) : bounds{ bounds }
 {
 	// Buttons are made of 2 SFML shapes: sf::Text and sf::Rectangle
 	// Start by creating the rectangle using the given parameters
@@ -17,7 +17,7 @@ Button::Button( sf::IntRect bounds, sf::Color color, std::string string, sf::Fon
     
     // Then, create the text object
     // The line with setOrigin() centers it within the rectangle
-    text = sf::Text( string, font );
+    text = sf::Text( string, font, size );
     text.setFillColor( sf::Color::Black );
 	sf::FloatRect textRect = text.getLocalBounds();
 	text.setOrigin( textRect.left + textRect.width / 2.f, textRect.top + textRect.height / 2.f );
@@ -35,6 +35,16 @@ void Button::draw( sf::RenderWindow* window )
 {
 	window->draw( shape );
 	window->draw( text );
+}
+
+// Switches the parameters of the SFML object
+void Button::change( std::string string, sf::Color color )
+{
+    text.setString( string );
+    sf::FloatRect textRect = text.getLocalBounds();
+    text.setOrigin( textRect.left + textRect.width / 2.f, textRect.top + textRect.height / 2.f );
+    text.setPosition( sf::Vector2f( bounds.left, bounds.top ) + shape.getSize() / 2.f );
+    shape.setFillColor( color );
 }
 
 // + = + = + = + = + = + = + = + = + = +

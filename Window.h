@@ -19,11 +19,12 @@ class Button
 
 public:
 
-	Button( sf::IntRect bounds, sf::Color color, std::string text, sf::Font& font );
+	Button( sf::IntRect bounds, sf::Color color, std::string text, sf::Font& font, int size = 32 );
 
 	// Control methods
 	bool wasClicked( sf::Vector2i clickPos );
 	void draw( sf::RenderWindow* window );
+	void change( std::string string, sf::Color color );
 };
 
 // This struct holds the data that all menus should be able to easily access
