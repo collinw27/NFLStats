@@ -128,7 +128,8 @@ SearchMenu::SearchMenu( WindowData* window )
     addWidget( "Total yards" );
 
     // Create buttons to search
-    searchGamesButton = new Button( sf::IntRect( 640 - 150, 550 - 40, 300, 80 ), sf::Color( 100, 255, 100 ), "Search", window->font );
+    searchGamesButton = new Button( sf::IntRect( 640 - 150, 550 - 40, 300, 80 ), sf::Color( 100, 255, 100 ), "Search Games", window->font );
+    searchPlayersButton = new Button( sf::IntRect( 640 - 150, 640 - 40, 300, 80 ), sf::Color( 100, 100, 255 ), "Search Players", window->font );
 }
 
 // Shorthand for creating a new widget
@@ -149,6 +150,8 @@ void SearchMenu::update()
 
         if ( searchGamesButton->wasClicked( window->clicks[0] ) )
             action = GAMES_MENU;
+        else if ( searchPlayersButton->wasClicked( window->clicks[0] ) )
+            action = PLAYERS_MENU;
         for ( auto widget : widgets )
         {
             if ( widget->tryClick( window->clicks[0] ) )
@@ -165,6 +168,7 @@ void SearchMenu::update()
     for ( auto widget : widgets )
         widget->draw( window->window );
     searchGamesButton->draw( window->window );
+    searchPlayersButton->draw( window->window );
 }
 
 // Return the weights for each parameter based on what the user selected

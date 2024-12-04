@@ -1,6 +1,6 @@
 #include "Window.h"
 #include "SearchMenu.h"
-#include "GamesMenu.h"
+#include "ResultsMenu.h"
 
 // + = + = + = + = + = + = + = + = + = +
 //            BUTTON CLASS
@@ -114,18 +114,28 @@ void Window::update()
             std::vector<int> weights = searchMenu->getWeights();
             database->buildHeap( weights );
             std::vector<GameStats*> topGames = database->extractGames( 50 );
-            delete gamesMenu;
-            gamesMenu = new GamesMenu( windowData, topGames );
-            state = GAMES_MENU;
+            delete resultsMenu;
+            resultsMenu = new ResultsMenu( windowData, topGames, std::vector<Player*>{} );
+            state = RESULTS_MENU;
+        }
+
+        // Search for the selected players
+        else if ( searchMenu->action == SearchMenu::PLAYERS_MENU )
+        {
+            std::vector<int> weights = searchMenu->getWeights();
+            std::vector<Player*> topPlayers = database->extractPlayers();
+            delete resultsMenu;
+            resultsMenu = new ResultsMenu( windowData, std::vector<GameStats*>{}, topPlayers );
+            state = RESULTS_MENU;
         }
     }
 
     // Games menu state:
     // Go back to search when "Back" is pressed
-    else if ( state == GAMES_MENU )
+    else if ( state == RESULTS_MENU )
     {
-        gamesMenu->update();
-        if ( gamesMenu->action == GamesMenu::BACK )
+        resultsMenu->update();
+        if ( resultsMenu->action == ResultsMenu::BACK )
             state = SEARCH_MENU;
     }
 

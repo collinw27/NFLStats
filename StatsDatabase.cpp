@@ -112,8 +112,10 @@ StatsDatabase::StatsDatabase( const std::string& filename )
 		Player* player = nullptr;
 		if ( players.find( playerID ) == players.end() )
 		{
-			player = new Player { playerID, playerName, std::vector<GameStats*>{}, std::unordered_set<std::string> {}, playerHeight, playerWeight };
+			player = new Player { playerID, playerName, std::vector<GameStats*>{}, playerHeight, playerWeight,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 			players[ playerID ] = player;
+			playerList.push_back( player );
 		}
 		else
 			player = players[ playerID ];
@@ -147,6 +149,28 @@ StatsDatabase::StatsDatabase( const std::string& filename )
 			totalYards,
 			opponent
 		};
+
+		// Add to this player's average
+		player->passAttempts += game->passAttempts;
+		player->completedPasses += game->completedPasses;
+		player->incompletePasses += game->incompletePasses;
+		player->passingYards += game->passingYards;
+		player->passingAirYards += game->passingAirYards;
+		player->passTD += game->passTD;
+		player->interceptions += game->interceptions;
+		player->targets += game->targets;
+		player->receptions += game->receptions;
+		player->receivingYards += game->receivingYards;
+		player->receivingAirYards += game->receivingAirYards;
+		player->yardsAfterCatch += game->yardsAfterCatch;
+		player->receptionTD += game->receptionTD;
+		player->rushAttempts += game->rushAttempts;
+		player->rushingYards += game->rushingYards;
+		player->rushingTD += game->rushingTD;
+		player->touches += game->touches;
+		player->totalTD += game->totalTD;
+		player->totalYards += game->totalYards;
+		++player->numDataPoints;
 
 		// Store the game object
 		games.push_back( game );
@@ -250,6 +274,13 @@ std::vector<GameStats*> StatsDatabase::extractGames( int count )
 	}
 
 	return output;
+}
+
+// Like extractGames(), but extracts every single player
+// Assumes the list is already sorted
+std::vector<Player*> StatsDatabase::extractPlayers()
+{
+	return playerList;
 }
 
 // Shorthand to use std::getline and convert to integer

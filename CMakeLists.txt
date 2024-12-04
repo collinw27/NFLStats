@@ -14,8 +14,8 @@ add_executable(DSAProj3 main.cpp
         Window.cpp
         SearchMenu.h
         SearchMenu.cpp
-        GamesMenu.h
-        GamesMenu.cpp
+        ResultsMenu.h
+        ResultsMenu.cpp
 )
 
 target_link_libraries(DSAProj3 sfml-system sfml-window sfml-graphics sfml-audio)

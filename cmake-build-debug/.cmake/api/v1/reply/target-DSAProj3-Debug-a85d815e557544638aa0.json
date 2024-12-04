@@ -189,13 +189,13 @@
 		},
 		{
 			"backtrace" : 1,
-			"path" : "GamesMenu.h",
+			"path" : "ResultsMenu.h",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "GamesMenu.cpp",
+			"path" : "ResultsMenu.cpp",
 			"sourceGroupIndex" : 0
 		}
 	],

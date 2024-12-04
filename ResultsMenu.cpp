@@ -1,11 +1,11 @@
-#include "GamesMenu.h"
+#include "ResultsMenu.h"
 #include <algorithm>
 
 // + = + = + = + = + = + = + = + = + = +
-//          GAME WIDGET CLASS
+//        RESULTS WIDGET CLASS
 // + = + = + = + = + = + = + = + = + = +
 
-GamesMenu::GameWidget::GameWidget( int index, sf::Font& font )
+ResultsMenu::ResultWidget::ResultWidget( int index, sf::Font& font )
 {
     bounds = sf::IntRect( ( 1280 - 800 ) / 2, 60 + 150 * index, 800, 120 );
 
@@ -21,12 +21,13 @@ GamesMenu::GameWidget::GameWidget( int index, sf::Font& font )
     text.setPosition( rect.getPosition() + sf::Vector2f( 10, 10 ) );
 }
 
-// Update the visuals based on which game information was passed into it
-void GamesMenu::GameWidget::update( GameStats* game, int newIndex )
+// Update the visuals based on which information was passed into it
+void ResultsMenu::ResultWidget::update( GameStats* game, Player* player, int newIndex )
 {
     // Make this invisible if the game is invalid (i.e. nullptr)
     this->game = game;
-    rect.setFillColor( ( game ) ? sf::Color( 150, 150, 150 ) : sf::Color::White );
+    this->player = player;
+    rect.setFillColor( ( game || player ) ? sf::Color( 150, 150, 150 ) : sf::Color::White );
 
     // If the game is valid, show the player, rank, season, and week
     std::string string = "";
@@ -35,62 +36,72 @@ void GamesMenu::GameWidget::update( GameStats* game, int newIndex )
         string += "#" + std::to_string( newIndex + 1 ) + " - " + game->player->name + "\n";
         string += "Season " + std::to_string( game->season ) + ", Week " + std::to_string( game->week );
     }
+    else if ( player )
+    {
+        string += "#" + std::to_string( newIndex + 1 ) + " - " + player->name + "\n";
+    }
     text.setString( string );
 }
 
-void GamesMenu::GameWidget::draw( sf::RenderWindow* window )
+void ResultsMenu::ResultWidget::draw( sf::RenderWindow* window )
 {
     window->draw( rect );
     window->draw( text );
 }
 
-bool GamesMenu::GameWidget::wasClicked( sf::Vector2i clickPos )
+bool ResultsMenu::ResultWidget::wasClicked( sf::Vector2i clickPos )
 {
     return bounds.contains( clickPos.x, clickPos.y );
 }
 
 // + = + = + = + = + = + = + = + = + = +
-//          GAMES MENU CLASS
+//         RESULTS MENU CLASS
 // + = + = + = + = + = + = + = + = + = +
 
-GamesMenu::GamesMenu( WindowData* window, std::vector<GameStats*>& games )
+// To display players, pass in an empty vector for games
+// To display games, pass in an empty vector for players
+ResultsMenu::ResultsMenu( WindowData* window, const std::vector<GameStats*>& games, const std::vector<Player*>& players )
 {
     this->window = window;
     this->games = games;
+    this->players = players;
 
     // Create widgets to hold/display the games on screen
     for ( int i = 0; i < 4; ++i )
-        widgets.push_back( new GameWidget( i, window->font ) );
+        widgets.push_back( new ResultWidget( i, window->font ) );
 
     // Create a button to exit this menu
     backButton = new Button( sf::IntRect( 20, 20, 150, 80 ), sf::Color( 220, 220, 220 ), "Back", window->font );
 
-    // Create the text to display game data
-    currentGame = sf::Text( "", window->font, 22 );
-    currentGame.setFillColor( sf::Color::Black );
-    currentGame.setPosition( sf::Vector2f( 640 - 450, 360 - 320 ) );
+    // Create the text to display result data
+    currentResult = sf::Text( "", window->font, 22 );
+    currentResult.setFillColor( sf::Color::Black );
+    currentResult.setPosition( sf::Vector2f( 640 - 450, 360 - 320 ) );
 
     // Create a background for the text
-    currentGameBG = sf::RectangleShape( sf::Vector2f( 900, 640 ) );
-    currentGameBG.setPosition( sf::Vector2f( 640 - 450, 360 - 320 ) );
-    currentGameBG.setFillColor( sf::Color( 210, 210, 255 ) );
+    currentResultBG = sf::RectangleShape( sf::Vector2f( 900, 640 ) );
+    currentResultBG.setPosition( sf::Vector2f( 640 - 450, 360 - 320 ) );
+    currentResultBG.setFillColor( sf::Color( 210, 210, 255 ) );
 }
 
-void GamesMenu::update()
+void ResultsMenu::update()
 {
     action = NO_ACTION;
 
     // Scroll up and down if necessary
     int oldScroll = scroll;
-    if ( !showingGame )
+    if ( !showingResult )
     {
         scroll -= window->mouseScroll;
-        scroll = std::max( 0, std::min( scroll, (int)( games.size() - 1 ) ) );
+        if ( !games.empty() )
+            scroll = std::max( 0, std::min( scroll, (int)( games.size() - 1 ) ) );
+        else
+            scroll = std::max( 0, std::min( scroll, (int)( players.size() - 1 ) ) );
     }
 
     if ( !window->clicks.empty() )
     {
-        if ( !showingGame )
+        if ( !showingResult )
         {
             // Close if necessary
             if ( backButton->wasClicked( window->clicks[0] ) )
@@ -98,36 +109,51 @@ void GamesMenu::update()
 
             // Click on invididual games
             // This makes more information about them pop up
-            for ( int i = 0; i < 4; ++i )
-                if ( widgets[i]->wasClicked( window->clicks[0] ) && i + scroll < games.size() )
-                    setCurrentGame( games[ i + scroll ] );
+            if ( !games.empty() )
+            {
+                for ( int i = 0; i < 4; ++i )
+                    if ( widgets[i]->wasClicked( window->clicks[0] ) && i + scroll < games.size() )
+                        setCurrentGame( games[ i + scroll ] );
+            }
+            else
+            {
+                for ( int i = 0; i < 4; ++i )
+                    if ( widgets[i]->wasClicked( window->clicks[0] ) && i + scroll < players.size() )
+                        setCurrentPlayer( players[ i + scroll ] );
+            }
         }
         else
             if ( !sf::IntRect( 640 - 450, 360 - 320, 900, 640 ).contains( window->clicks[0] ) )
+            {
                 setCurrentGame( nullptr );
+            }
     }
 
     // Modify the UI upon being created or scrolled
     if ( oldScroll != scroll )
     {
         for ( int i = 0; i < 4; ++i )
-            widgets[i]->update( ( i + scroll < games.size() ) ? games[ i + scroll ] : nullptr, i + scroll );
+            widgets[i]->update(
+                ( !games.empty() && i + scroll < games.size() ) ? games[ i + scroll ] : nullptr,
+                ( games.empty() && i + scroll < players.size() ) ? players[ i + scroll ] : nullptr,
+                i + scroll
+            );
     }
 
     // Draw the visuals to the screen
     backButton->draw( window->window );
     for ( auto widget : widgets )
         widget->draw( window->window );
-    if ( showingGame )
+    if ( showingResult )
     {
-        window->window->draw( currentGameBG );
-        window->window->draw( currentGame );
+        window->window->draw( currentResultBG );
+        window->window->draw( currentResult );
     }
 }
 
 // Displays stats about the selected game in a popup
 // Pass in nullptr to close popup
-void GamesMenu::setCurrentGame( GameStats* game )
+void ResultsMenu::setCurrentGame( GameStats* game )
 {
     std::string string;
     if ( game != nullptr )
@@ -156,6 +182,19 @@ void GamesMenu::setCurrentGame( GameStats* game )
         string += "Total TDs: " + std::to_string( game->totalTD ) + "\n";
         string += "Total yards: " + std::to_string( game->totalYards ) + "\n";
     }
-    currentGame.setString( string );
-    showingGame = ( game != nullptr );
+    currentResult.setString( string );
+    showingResult = ( game != nullptr );
+}
+
+// Displays stats about the selected player in a popup
+// Pass in nullptr to close popup
+void ResultsMenu::setCurrentPlayer( Player* player )
+{
+    std::string string;
+    if ( player != nullptr )
+    {
+        string += player->name + "\n";
+    }
+    currentResult.setString( string );
+    showingResult = ( player != nullptr );
 }

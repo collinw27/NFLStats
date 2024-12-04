@@ -37,6 +37,7 @@ class SearchMenu
 
     // Buttons
     Button* searchGamesButton;
+    Button* searchPlayersButton;
 
     void addWidget( std::string text );
 
@@ -49,7 +50,8 @@ public:
 	enum Action
 	{
 		NO_ACTION,
-		GAMES_MENU
+		GAMES_MENU,
+		PLAYERS_MENU
 	};
 
 	Action action = NO_ACTION;

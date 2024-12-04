@@ -15,9 +15,30 @@ struct Player
 	int id;
 	std::string name;
 	std::vector<GameStats*> games;
-	std::unordered_set<std::string> teams;
 	int height;
 	int weight;
+
+	// Store an aggregate of stats to compute an average
+	int passAttempts;
+	int completedPasses;
+	int incompletePasses;
+	int passingYards;
+	int passingAirYards;
+	int passTD;
+	int interceptions;
+	int targets;
+	int receptions;
+	int receivingYards;
+	int receivingAirYards;
+	int yardsAfterCatch;
+	int receptionTD;
+	int rushAttempts;
+	int rushingYards;
+	int rushingTD;
+	int touches;
+	int totalTD;
+	int totalYards;
+	int numDataPoints;
 };
 
 // An aggregate of stats for each player for each game
@@ -65,20 +86,25 @@ class StatsDatabase
 	std::vector<GameStats*> games;
 
 	// Store the last heap that was created/used
-	// This way, more players can be extracted without needing to rebuild the heap
+	// This way, more games can be extracted without needing to rebuild the heap
 	std::pair<GameStats*, int>* gameHeap = nullptr;
 	int heapSize = 0;
 
-	// Private functions
+	// Store a sorted vector containing all players
+	// Can be sorted by different stats
+	std::vector<Player*> playerList;
 
 public:
 
 	StatsDatabase( const std::string& filename );
 
-	// Searching & heap building
+	// Games: Searching & heap building
 	void buildHeap( std::vector<int>& weightMatrix );
 	std::vector<GameStats*> extractGames( int count );
 	int getGameScore( GameStats* game, std::vector<int>& weightMatrix );
+
+	// Players: List sorting & searching
+	std::vector<Player*> extractPlayers();
 
 	// Shorthand to use std::getline and convert to integer
 	static int getlineInt( std::ifstream& file, char delimiter = ',' );

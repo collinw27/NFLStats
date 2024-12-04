@@ -7,7 +7,7 @@
 // Forward declarations for different menu types
 // (The header files rely on this file, so they can't be #included here)
 class SearchMenu;
-class GamesMenu;
+class ResultsMenu;
 
 // A simple button with text that registers click events
 // Defined here so all menu types have access to it
@@ -48,7 +48,7 @@ class Window
 	enum State
 	{
 		SEARCH_MENU,
-		GAMES_MENU
+		RESULTS_MENU
 	};
 
 	State state = SEARCH_MENU;
@@ -57,7 +57,7 @@ class Window
 
 	// Different menus
 	SearchMenu* searchMenu;
-	GamesMenu* gamesMenu = nullptr;
+	ResultsMenu* resultsMenu = nullptr;
 
 public:
 
