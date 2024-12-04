@@ -39,6 +39,7 @@ struct WindowData
 	// Stores all clicks & key presses from this frame
 	std::vector<sf::Vector2i> clicks;
 	std::vector<sf::Keyboard::Key> keys;
+	int mouseScroll;
 };
 
 class Window

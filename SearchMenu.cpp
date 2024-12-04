@@ -21,6 +21,8 @@ SearchMenu::SearchWidget::SearchWidget( std::string string, int index, sf::Font&
     text.setOrigin( textRect.left + textRect.width / 2.f, textRect.top + textRect.height / 2.f );
     text.setPosition( sf::Vector2f( bounds.left + 250, bounds.top + 20 ) );
     
+    // Unlike normal buttons, has an extra parameter to display the current weight
+    // Weight isn't displayed when 1 or 0, however
     weightText = sf::Text( "", font, 24 );
     weightText.setFillColor( sf::Color::Blue );
     weightText.setOrigin( 0, textRect.top + textRect.height / 2.f );
@@ -61,6 +63,9 @@ void SearchMenu::SearchWidget::enterText( std::vector<sf::Keyboard::Key>& keys )
     for ( auto key : keys )
     {   
         // Probably a better way of doing this, but this gives flexibiliy at least
+        // Append a new number to the end of the weight based on the keyboard input
+        // It isn't allowed to exceed 9999 in magnitude
+        // '-' can be typed to flip the sign
         int newNum = -1;
         if ( key == sf::Keyboard::Num0 ) newNum = 0;
         else if ( key == sf::Keyboard::Num1 ) newNum = 1;
@@ -74,6 +79,10 @@ void SearchMenu::SearchWidget::enterText( std::vector<sf::Keyboard::Key>& keys )
         else if ( key == sf::Keyboard::Num9 ) newNum = 9;
         if ( newNum != -1 )
         {
+            // 'typingReset' stores whether the user has entered text yet or not
+            // The weight isn't displayed until the user types something
+            // Also, the weight starts at 1, but we don't want 1 to always precede the input,
+            // so it's reset to 0 upon the first character being typed
             if ( typingReset )
                 weight = 0;
             weight = std::stoi( std::to_string( weight ) + std::to_string( newNum ) );
@@ -82,7 +91,7 @@ void SearchMenu::SearchWidget::enterText( std::vector<sf::Keyboard::Key>& keys )
         }
         if ( key == sf::Keyboard::Hyphen )
             weight *= -1;
-        if ( weight == 0 || weight == 1 )
+        if ( typingReset )
             weightText.setString( "" );
         else
             weightText.setString( std::to_string( weight ) + "x" );
@@ -118,7 +127,7 @@ SearchMenu::SearchMenu( WindowData* window )
     addWidget( "Total TDs" );
     addWidget( "Total yards" );
 
-    // Create a button to confirm changes & exit this menu
+    // Create buttons to search
     searchGamesButton = new Button( sf::IntRect( 640 - 150, 550 - 40, 300, 80 ), sf::Color( 100, 255, 100 ), "Search", window->font );
 }
 
@@ -148,6 +157,7 @@ void SearchMenu::update()
     }
 
     // Type in the widget
+    // Used for entering weights via the keyboard
     if ( !window->keys.empty() && typingWidget != nullptr )
         typingWidget->enterText( window->keys );
 

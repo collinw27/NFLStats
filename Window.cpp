@@ -76,6 +76,7 @@ void Window::update()
 	// Erase the events from the previous frame
 	windowData->clicks.clear();
 	windowData->keys.clear();
+    windowData->mouseScroll = 0;
 
 	// Store clicks/keys to be checked by the menu
 	// Also close the window if necessary
@@ -93,13 +94,16 @@ void Window::update()
 
         else if ( event.type == sf::Event::KeyPressed )
 		    windowData->keys.push_back( event.key.code );
+
+        else if ( event.type == sf::Event::MouseWheelScrolled )
+            windowData->mouseScroll = event.mouseWheelScroll.delta;
     }
 
     // Start drawing the next frame
     windowData->window->clear( sf::Color::White );
 
     // Search menu state:
-    // ...
+    // Switch to games menu when "Search Games" is pressed
     if ( state == SEARCH_MENU )
     {
         searchMenu->update();
@@ -109,7 +113,7 @@ void Window::update()
         {
             std::vector<int> weights = searchMenu->getWeights();
             database->buildHeap( weights );
-            std::vector<GameStats*> topGames = database->extractGames( 10 );
+            std::vector<GameStats*> topGames = database->extractGames( 50 );
             delete gamesMenu;
             gamesMenu = new GamesMenu( windowData, topGames );
             state = GAMES_MENU;
@@ -117,10 +121,12 @@ void Window::update()
     }
 
     // Games menu state:
-    // ...
+    // Go back to search when "Back" is pressed
     else if ( state == GAMES_MENU )
     {
         gamesMenu->update();
+        if ( gamesMenu->action == GamesMenu::BACK )
+            state = SEARCH_MENU;
     }
 
     // Display the buffered frame
