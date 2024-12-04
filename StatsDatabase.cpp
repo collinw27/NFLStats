@@ -112,7 +112,8 @@ StatsDatabase::StatsDatabase( const std::string& filename )
 		Player* player = nullptr;
 		if ( players.find( playerID ) == players.end() )
 		{
-			player = new Player { playerID, playerName, std::unordered_set<std::string>{}, playerHeight, playerWeight,
+			player = new Player { playerID, playerName,
+				std::unordered_set<std::string>{}, std::unordered_set<std::string>{}, playerHeight, playerWeight,
 			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 			players[ playerID ] = player;
 			playerList.push_back( player );
@@ -173,6 +174,7 @@ StatsDatabase::StatsDatabase( const std::string& filename )
 		player->totalYards += game->totalYards;
 		++player->numDataPoints;
 		player->teams.insert( game->team );
+		player->positions.insert( game->position );
 
 		// Store the game object
 		games.push_back( game );
@@ -182,7 +184,17 @@ StatsDatabase::StatsDatabase( const std::string& filename )
         	std::cout << "Loaded " << i << " games" << std::endl;
     }
 
-    std::cout << "Done! (" << i << " games total)" << std::endl;
+    std::cout << "Done! (" << i << " games total, " << players.size() << " players total)" << std::endl;
+}
+
+// Deallocate dynamic memory from the heap
+StatsDatabase::~StatsDatabase()
+{
+	delete[] gameHeap;
+	for ( auto player : players )
+		delete player.second;
+	for ( auto game : games )
+		delete game;
 }
 
 // Creates a new heap using the weights passed in

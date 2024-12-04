@@ -62,6 +62,7 @@ class Window
 public:
 
 	Window();
+	~Window();
 
 	// Control methods
 	bool isOpen();

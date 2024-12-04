@@ -59,6 +59,7 @@ public:
 	Action action = NO_ACTION;
 
 	ResultsMenu( WindowData* window, const std::vector<GameStats*>& games, const std::vector<Player*>& players );
+	~ResultsMenu();
 
 	// Control methods
     void update();

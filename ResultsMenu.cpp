@@ -86,6 +86,14 @@ ResultsMenu::ResultsMenu( WindowData* window, const std::vector<GameStats*>& gam
     currentResultBG.setFillColor( sf::Color( 210, 210, 255 ) );
 }
 
+// Deallocate dynamic memory from the heap
+ResultsMenu::~ResultsMenu()
+{
+    delete backButton;
+    for ( auto widget : widgets )
+        delete widget;
+}
+
 void ResultsMenu::update()
 {
     action = NO_ACTION;
@@ -199,6 +207,9 @@ void ResultsMenu::setCurrentPlayer( Player* player )
         string += "Teams: ";
         for ( auto team : player->teams )
             string += team + " ";
+        string += "\nPositions: ";
+        for ( auto position : player->positions )
+            string += position + " ";
         string += "\n";
         string += "Height: " + std::to_string( player->height ) + " in.\n";
         string += "Weight: " + std::to_string( player->weight ) + " lbs.\n";

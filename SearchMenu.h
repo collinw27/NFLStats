@@ -57,6 +57,9 @@ public:
 	Action action = NO_ACTION;
 
 	SearchMenu( WindowData* window );
+	~SearchMenu();
+
+	// Control methods
     void update();
     std::vector<int> getWeights();
 };

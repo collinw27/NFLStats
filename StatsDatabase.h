@@ -15,6 +15,7 @@ struct Player
 	int id;
 	std::string name;
 	std::unordered_set<std::string> teams;
+	std::unordered_set<std::string> positions;
 	int height;
 	int weight;
 
@@ -103,6 +104,7 @@ class StatsDatabase
 public:
 
 	StatsDatabase( const std::string& filename );
+	~StatsDatabase();
 
 	// Games: Searching & heap building
 	void buildGameHeap( std::vector<int>& weightMatrix );

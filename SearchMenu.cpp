@@ -132,6 +132,15 @@ SearchMenu::SearchMenu( WindowData* window )
     searchPlayersButton = new Button( sf::IntRect( 640 - 150, 640 - 40, 300, 80 ), sf::Color( 100, 100, 255 ), "Search Players", window->font );
 }
 
+// Deallocate dynamic memory from the heap
+SearchMenu::~SearchMenu()
+{
+    delete searchGamesButton;
+    delete searchPlayersButton;
+    for ( auto widget : widgets )
+        delete widget;
+}
+
 // Shorthand for creating a new widget
 void SearchMenu::addWidget( std::string text )
 {

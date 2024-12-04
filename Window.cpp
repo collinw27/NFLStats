@@ -64,6 +64,17 @@ Window::Window()
     database = new StatsDatabase( "weekly_player_data_full.csv" );
 }
 
+// Deallocate dynamic memory from the heap
+Window::~Window()
+{
+    if ( windowData != nullptr )
+        delete windowData->window;
+    delete windowData;
+    delete searchMenu;
+    delete resultsMenu;
+    delete database;
+}
+
 // Used by the main loop to decide when to end the program
 bool Window::isOpen()
 {
@@ -113,7 +124,7 @@ void Window::update()
         {
             std::vector<int> weights = searchMenu->getWeights();
             database->buildGameHeap( weights );
-            std::vector<GameStats*> topGames = database->extractGames( 50 );
+            std::vector<GameStats*> topGames = database->extractGames( 200 );
             delete resultsMenu;
             resultsMenu = new ResultsMenu( windowData, topGames, std::vector<Player*>{} );
             state = RESULTS_MENU;
