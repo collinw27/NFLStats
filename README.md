@@ -1,3 +1,7 @@
+<H1>Instructions for running:</H1>
+
+The CMakeLists.txt file can be checked for instructions for cmake. The project should be dynamically linked with SFML 2.5.1. The DLLs for SFML are already in the cmake-build-debug folder. Besides that, the folder containing the rest of the library should be downloaded from https://www.sfml-dev.org/download/sfml/2.5.1/, and linked at compile time.
+
 <H1> COP3530 - Project 3 </h1>
 This is the template for Project 3 repositories. It includes all the assignment instructions and documentation to help you use GitHub.
 
