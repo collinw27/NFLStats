@@ -14,7 +14,7 @@ struct Player
 {
 	int id;
 	std::string name;
-	std::vector<GameStats*> games;
+	std::unordered_set<std::string> teams;
 	int height;
 	int weight;
 
@@ -38,7 +38,10 @@ struct Player
 	int touches;
 	int totalTD;
 	int totalYards;
-	int numDataPoints;
+	float numDataPoints;
+
+	// Prevents having to constantly re-evaluate the score
+	float score;
 };
 
 // An aggregate of stats for each player for each game
@@ -76,6 +79,9 @@ struct GameStats
 	int totalYards;
 	// skipped
 	std::string opponent;
+
+	// Prevents having to constantly re-evaluate the score
+	int score;
 };
 
 class StatsDatabase
@@ -87,7 +93,7 @@ class StatsDatabase
 
 	// Store the last heap that was created/used
 	// This way, more games can be extracted without needing to rebuild the heap
-	std::pair<GameStats*, int>* gameHeap = nullptr;
+	GameStats** gameHeap = nullptr;
 	int heapSize = 0;
 
 	// Store a sorted vector containing all players
@@ -99,13 +105,19 @@ public:
 	StatsDatabase( const std::string& filename );
 
 	// Games: Searching & heap building
-	void buildHeap( std::vector<int>& weightMatrix );
+	void buildGameHeap( std::vector<int>& weightMatrix );
 	std::vector<GameStats*> extractGames( int count );
 	int getGameScore( GameStats* game, std::vector<int>& weightMatrix );
 
 	// Players: List sorting & searching
+	void sortPlayers( std::vector<int>& weightMatrix );
 	std::vector<Player*> extractPlayers();
+	float getPlayerScore( Player* player, std::vector<int>& weightMatrix );
 
 	// Shorthand to use std::getline and convert to integer
 	static int getlineInt( std::ifstream& file, char delimiter = ',' );
+
+private: 
+
+	void mergeSortPlayers( int left, int right );
 };

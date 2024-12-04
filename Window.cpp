@@ -112,7 +112,7 @@ void Window::update()
         if ( searchMenu->action == SearchMenu::GAMES_MENU )
         {
             std::vector<int> weights = searchMenu->getWeights();
-            database->buildHeap( weights );
+            database->buildGameHeap( weights );
             std::vector<GameStats*> topGames = database->extractGames( 50 );
             delete resultsMenu;
             resultsMenu = new ResultsMenu( windowData, topGames, std::vector<Player*>{} );
@@ -123,6 +123,7 @@ void Window::update()
         else if ( searchMenu->action == SearchMenu::PLAYERS_MENU )
         {
             std::vector<int> weights = searchMenu->getWeights();
+            database->sortPlayers( weights );
             std::vector<Player*> topPlayers = database->extractPlayers();
             delete resultsMenu;
             resultsMenu = new ResultsMenu( windowData, std::vector<GameStats*>{}, topPlayers );

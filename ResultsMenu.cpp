@@ -33,12 +33,14 @@ void ResultsMenu::ResultWidget::update( GameStats* game, Player* player, int new
     std::string string = "";
     if ( game )
     {
-        string += "#" + std::to_string( newIndex + 1 ) + " - " + game->player->name + "\n";
+        string += "#" + std::to_string( newIndex + 1 ) + " - " + game->player->name;
+        string += " [S=" + std::to_string( game->score ) + "]\n";
         string += "Season " + std::to_string( game->season ) + ", Week " + std::to_string( game->week );
     }
     else if ( player )
     {
-        string += "#" + std::to_string( newIndex + 1 ) + " - " + player->name + "\n";
+        string += "#" + std::to_string( newIndex + 1 ) + " - " + player->name;
+        string += " [S=" + std::to_string( player->score ) + "]\n";
     }
     text.setString( string );
 }
@@ -194,6 +196,31 @@ void ResultsMenu::setCurrentPlayer( Player* player )
     if ( player != nullptr )
     {
         string += player->name + "\n";
+        string += "Teams: ";
+        for ( auto team : player->teams )
+            string += team + " ";
+        string += "\n";
+        string += "Height: " + std::to_string( player->height ) + " in.\n";
+        string += "Weight: " + std::to_string( player->weight ) + " lbs.\n";
+        string += "Avg. Pass attempts: " + std::to_string( player->passAttempts / player->numDataPoints ) + "\n";
+        string += "Avg. Complete passes: " + std::to_string( player->completedPasses / player->numDataPoints ) + "\n";
+        string += "Avg. Incomplete passes: " + std::to_string( player->incompletePasses / player->numDataPoints ) + "\n";
+        string += "Avg. Passing yards: " + std::to_string( player->passingYards / player->numDataPoints ) + "\n";
+        string += "Avg. Passing air yards: " + std::to_string( player->passingAirYards / player->numDataPoints ) + "\n";
+        string += "Avg. Passing TDs: " + std::to_string( player->passTD / player->numDataPoints ) + "\n";
+        string += "Avg. Interceptions: " + std::to_string( player->interceptions / player->numDataPoints ) + "\n";
+        string += "Avg. Targets: " + std::to_string( player->targets / player->numDataPoints ) + "\n";
+        string += "Avg. Receptions: " + std::to_string( player->receptions / player->numDataPoints ) + "\n";
+        string += "Avg. Receiving yards: " + std::to_string( player->receivingYards / player->numDataPoints ) + "\n";
+        string += "Avg. Receiving air yards: " + std::to_string( player->receivingAirYards / player->numDataPoints ) + "\n";
+        string += "Avg. Yards after catch: " + std::to_string( player->yardsAfterCatch / player->numDataPoints ) + "\n";
+        string += "Avg. Reception TDs: " + std::to_string( player->receptionTD / player->numDataPoints ) + "\n";
+        string += "Avg. Rush attempts: " + std::to_string( player->rushAttempts / player->numDataPoints ) + "\n";
+        string += "Avg. Rushing yards: " + std::to_string( player->rushingYards / player->numDataPoints ) + "\n";
+        string += "Avg. Rushing TDs: " + std::to_string( player->rushingTD / player->numDataPoints ) + "\n";
+        string += "Avg. Touches: " + std::to_string( player->touches / player->numDataPoints ) + "\n";
+        string += "Avg. Total TDs: " + std::to_string( player->totalTD / player->numDataPoints ) + "\n";
+        string += "Avg. Total yards: " + std::to_string( player->totalYards / player->numDataPoints ) + "\n";
     }
     currentResult.setString( string );
     showingResult = ( player != nullptr );

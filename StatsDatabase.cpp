@@ -112,7 +112,7 @@ StatsDatabase::StatsDatabase( const std::string& filename )
 		Player* player = nullptr;
 		if ( players.find( playerID ) == players.end() )
 		{
-			player = new Player { playerID, playerName, std::vector<GameStats*>{}, playerHeight, playerWeight,
+			player = new Player { playerID, playerName, std::unordered_set<std::string>{}, playerHeight, playerWeight,
 			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 			players[ playerID ] = player;
 			playerList.push_back( player );
@@ -147,7 +147,8 @@ StatsDatabase::StatsDatabase( const std::string& filename )
 			touches,
 			totalTD,
 			totalYards,
-			opponent
+			opponent,
+            0
 		};
 
 		// Add to this player's average
@@ -171,10 +172,10 @@ StatsDatabase::StatsDatabase( const std::string& filename )
 		player->totalTD += game->totalTD;
 		player->totalYards += game->totalYards;
 		++player->numDataPoints;
+		player->teams.insert( game->team );
 
 		// Store the game object
 		games.push_back( game );
-		player->games.push_back( game );
 
 		// For debugging
         if ( i++ % 10000 == 9999 )
@@ -185,26 +186,26 @@ StatsDatabase::StatsDatabase( const std::string& filename )
 }
 
 // Creates a new heap using the weights passed in
-void StatsDatabase::buildHeap( std::vector<int>& weightMatrix )
+void StatsDatabase::buildGameHeap( std::vector<int>& weightMatrix )
 {
 	// Clear the old heap, if one existed
 	delete[] gameHeap;
 	heapSize = 0;
-	gameHeap = new std::pair<GameStats*, int>[ games.size() ];
+	gameHeap = new GameStats*[ games.size() ];
 
 	// Add every game to the heap
-	for ( GameStats* gamePtr : games )
+	for ( GameStats* game : games )
 	{
 		// Start by appending it to the last slot in the heap
-		std::pair<GameStats*, int> game { gamePtr, getGameScore( gamePtr, weightMatrix ) };
+		game->score = getGameScore( game, weightMatrix );
 		gameHeap[ heapSize ] = game;
 
 		// Continue moving the element upward while its score is greater than its parent's
 		int child = heapSize++;
 		int parent = ( child - 1 ) / 2;
-		while ( parent >= 0 && gameHeap[ parent ].second < gameHeap[ child ].second )
+		while ( parent >= 0 && gameHeap[ parent ]->score < gameHeap[ child ]->score )
 		{
-			std::pair<GameStats*, int> temp = gameHeap[ parent ];
+			GameStats* temp = gameHeap[ parent ];
 			gameHeap[ parent ] = gameHeap[ child ];
 			gameHeap[ child ] = temp;
 			child = parent;
@@ -247,24 +248,24 @@ std::vector<GameStats*> StatsDatabase::extractGames( int count )
 	// Run for the number of iterations, or until there are no games left
 	for ( int i = 0; ( i < count && heapSize > 0 ); ++i )
 	{
-		output.push_back( gameHeap[0].first );
+		output.push_back( gameHeap[0] );
 		gameHeap[0] = gameHeap[ --heapSize ];
 		int parent = 0;
 		int child1 = 1;
 		int child2 = 2;
-		while ( ( child1 < heapSize && gameHeap[ child1 ].second > gameHeap[ parent ].second )
-			|| ( child2 < heapSize && gameHeap[ child2 ].second > gameHeap[ parent ].second ) )
+		while ( ( child1 < heapSize && gameHeap[ child1 ]->score > gameHeap[ parent ]->score )
+			|| ( child2 < heapSize && gameHeap[ child2 ]->score > gameHeap[ parent ]->score ) )
 		{
 			// Find the greater child (choosing the greater child if applicable)
 			int minChild;
 			if ( child1 < heapSize && child2 < heapSize )
-				minChild = ( gameHeap[ child1 ].second > gameHeap[ child2 ].second ) ? child1 : child2;
+				minChild = ( gameHeap[ child1 ]->score > gameHeap[ child2 ]->score ) ? child1 : child2;
 			else
 				minChild = ( child1 < heapSize ) ? child1 : child2;
 
 			// Swap the values
 			// Then, prepare the pointers for the next iteration
-            std::pair<GameStats*, int> temp = gameHeap[ parent ];
+            GameStats* temp = gameHeap[ parent ];
 			gameHeap[ parent ] = gameHeap[ minChild ];
 			gameHeap[ minChild ] = temp;
 			parent = minChild;
@@ -276,11 +277,93 @@ std::vector<GameStats*> StatsDatabase::extractGames( int count )
 	return output;
 }
 
+void StatsDatabase::sortPlayers( std::vector<int>& weightMatrix )
+{
+	// First, assign a score to each player
+	for ( auto player : players )
+		player.second->score = getPlayerScore( player.second, weightMatrix );
+
+	// Then, recursively run merge sort
+    mergeSortPlayers( 0, players.size() - 1 );
+}
+
+// Recursively calls merge sort on the players vector
+void StatsDatabase::mergeSortPlayers( int left, int right )
+{
+	// Once left and right reach each other, stop splitting (only one element)
+	if ( left < right )
+	{
+		int middle = left + ( right - left ) / 2;
+		mergeSortPlayers( left, middle );
+		mergeSortPlayers( middle + 1, right );
+
+		// Create 2 sub arrays (adapted from lecture slides)
+		int n1 = middle - left + 1;
+		int n2 = right - middle;
+		Player** sub1 = new Player*[n1];
+		Player** sub2 = new Player*[n2];
+		for ( int i = 0; i < n1; ++i )
+			sub1[i] = playerList[ left + i ];
+		for ( int i = 0; i < n2; ++i )
+			sub2[i] = playerList[ middle + 1 + i ];
+
+		// Continue merging the sub arrays
+		int i = 0;
+		int j = 0;
+		int k = left;
+		while ( i < n1 && j < n2 )
+		{
+			if ( sub1[i]->score >= sub2[j]->score )
+				playerList[k] = sub1[i++];
+			else
+				playerList[k] = sub2[j++];
+			++k;
+		}
+
+		// Append the remaining elements
+		while ( i < n1 )
+			playerList[k++] = sub1[i++];
+		while ( j < n2 )
+			playerList[k++] = sub2[j++];
+
+		// Deallocate arrays
+		delete[] sub1;
+		delete[] sub2;
+	}
+}
+
 // Like extractGames(), but extracts every single player
 // Assumes the list is already sorted
 std::vector<Player*> StatsDatabase::extractPlayers()
 {
 	return playerList;
+}
+
+// Totals the player's stats multiplied by the user-defined weights
+// The stats are averaged across all the games they played in
+float StatsDatabase::getPlayerScore( Player* player, std::vector<int>& weightMatrix )
+{
+	return (
+		player->passAttempts * ( weightMatrix[0] / player->numDataPoints ) +
+		player->completedPasses * ( weightMatrix[1] / player->numDataPoints ) +
+		player->incompletePasses * ( weightMatrix[2] / player->numDataPoints ) +
+		player->passingYards * ( weightMatrix[3] / player->numDataPoints ) +
+		player->passingAirYards * ( weightMatrix[4] / player->numDataPoints ) +
+		player->passTD * ( weightMatrix[5] / player->numDataPoints ) +
+		player->interceptions * ( weightMatrix[6] / player->numDataPoints ) +
+		player->targets * ( weightMatrix[7] / player->numDataPoints ) +
+		player->receptions * ( weightMatrix[8] / player->numDataPoints ) +
+		player->receivingYards * ( weightMatrix[9] / player->numDataPoints ) +
+		player->receivingAirYards * ( weightMatrix[10] / player->numDataPoints ) +
+		player->yardsAfterCatch * ( weightMatrix[11] / player->numDataPoints ) +
+		player->receptionTD * ( weightMatrix[12] / player->numDataPoints ) +
+		player->rushAttempts * ( weightMatrix[13] / player->numDataPoints ) +
+		player->rushingYards * ( weightMatrix[14] / player->numDataPoints ) +
+		player->rushingTD * ( weightMatrix[15] / player->numDataPoints ) +
+		player->touches * ( weightMatrix[16] / player->numDataPoints ) +
+		player->totalTD * ( weightMatrix[17] / player->numDataPoints ) +
+		player->totalYards * ( weightMatrix[18] / player->numDataPoints )
+	);
 }
 
 // Shorthand to use std::getline and convert to integer
