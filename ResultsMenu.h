@@ -35,17 +35,17 @@ class ResultsMenu
 	// State
 	// Different variables for games/players when necessary
 	WindowData* window;
-    std::vector<GameStats*> games;
-    std::vector<Player*> players;
-    bool showingResult = false;
+	std::vector<GameStats*> games;
+	std::vector<Player*> players;
+	bool showingResult = false;
 
-    // Display elements
-    std::vector<ResultWidget*> widgets;
-    Button* backButton;
-    sf::Text currentResult;
-    sf::RectangleShape currentResultBG;
+	// Display elements
+	std::vector<ResultWidget*> widgets;
+	Button* backButton;
+	sf::Text currentResult;
+	sf::RectangleShape currentResultBG;
 
-    int scroll = -1;
+	int scroll = -1;
 
 public:
 
@@ -62,7 +62,7 @@ public:
 	~ResultsMenu();
 
 	// Control methods
-    void update();
-    void setCurrentGame( GameStats* game );
-    void setCurrentPlayer( Player* player );
+	void update();
+	void setCurrentGame( GameStats* game );
+	void setCurrentPlayer( Player* player );
 };

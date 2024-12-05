@@ -32,14 +32,14 @@ class SearchMenu
 	};
 
 	WindowData* window;
-    std::vector<SearchWidget*> widgets;
-    SearchWidget* typingWidget;
+	std::vector<SearchWidget*> widgets;
+	SearchWidget* typingWidget;
 
-    // Buttons
-    Button* searchGamesButton;
-    Button* searchPlayersButton;
+	// Buttons
+	Button* searchGamesButton;
+	Button* searchPlayersButton;
 
-    void addWidget( std::string text );
+	void addWidget( std::string text );
 
 public:
 
@@ -60,6 +60,6 @@ public:
 	~SearchMenu();
 
 	// Control methods
-    void update();
-    std::vector<int> getWeights();
+	void update();
+	std::vector<int> getWeights();
 };

@@ -2,27 +2,27 @@
 
 StatsDatabase::StatsDatabase( const std::string& filename )
 {
-    std::cout << "Loading database..." << std::endl;
+	std::cout << "Loading database..." << std::endl;
 
 	// Test by reading the names from the first 10 lines of the CSV file
-    std::ifstream csvFile { filename };
+	std::ifstream csvFile { filename };
 
-    // Discard the first line
-    std::string buffer;
-    std::getline( csvFile, buffer );
+	// Discard the first line
+	std::string buffer;
+	std::getline( csvFile, buffer );
 
-    // Continue reading the data for each line
-    // When large chunks of data go unused, they are repeatedly extracted to the buffer
-    int i = 0;
-    while ( true )
-    {
-    	int playerID;
-    	std::string playerName;
-    	int playerHeight;
-    	int playerWeight;
+	// Continue reading the data for each line
+	// When large chunks of data go unused, they are repeatedly extracted to the buffer
+	int i = 0;
+	while ( true )
+	{
+		int playerID;
+		std::string playerName;
+		int playerHeight;
+		int playerWeight;
 
-    	std::string team;
-    	std::string position;
+		std::string team;
+		std::string position;
 		int season;
 		int week;
 		std::string gameType;
@@ -53,36 +53,36 @@ StatsDatabase::StatsDatabase( const std::string& filename )
 		// skipped
 		std::string opponent;
 
-    	std::getline( csvFile, buffer, ',' );
-    	if ( csvFile.eof() )
-    		break;
+		std::getline( csvFile, buffer, ',' );
+		if ( csvFile.eof() )
+			break;
 
-    	team = buffer;
-    	std::getline( csvFile, buffer, ',' );
-    	playerID = std::stoi( buffer.substr( 3 ) );
-    	std::getline( csvFile, playerName, ',' );
-    	std::getline( csvFile, position, ',' );
-    	season = getlineInt( csvFile );
-    	week = getlineInt( csvFile );
-    	std::getline( csvFile, gameType, ',' );
-    	passAttempts = getlineInt( csvFile );
-    	completedPasses = getlineInt( csvFile );
-    	incompletePasses = getlineInt( csvFile );
-    	passingYards = getlineInt( csvFile );
-    	passingAirYards = getlineInt( csvFile );
-    	passTD = getlineInt( csvFile );
-    	interceptions = getlineInt( csvFile );
+		team = buffer;
+		std::getline( csvFile, buffer, ',' );
+		playerID = std::stoi( buffer.substr( 3 ) );
+		std::getline( csvFile, playerName, ',' );
+		std::getline( csvFile, position, ',' );
+		season = getlineInt( csvFile );
+		week = getlineInt( csvFile );
+		std::getline( csvFile, gameType, ',' );
+		passAttempts = getlineInt( csvFile );
+		completedPasses = getlineInt( csvFile );
+		incompletePasses = getlineInt( csvFile );
+		passingYards = getlineInt( csvFile );
+		passingAirYards = getlineInt( csvFile );
+		passTD = getlineInt( csvFile );
+		interceptions = getlineInt( csvFile );
 
-    	std::getline( csvFile, buffer, ',' );
+		std::getline( csvFile, buffer, ',' );
 
-    	targets = getlineInt( csvFile );
-    	receptions = getlineInt( csvFile );
+		targets = getlineInt( csvFile );
+		receptions = getlineInt( csvFile );
 		receivingYards = getlineInt( csvFile );
 		receivingAirYards = getlineInt( csvFile );
 		yardsAfterCatch = getlineInt( csvFile );
 		receptionTD = getlineInt( csvFile );
 
-    	std::getline( csvFile, buffer, ',' );
+		std::getline( csvFile, buffer, ',' );
 
 		rushAttempts = getlineInt( csvFile );
 		rushingYards = getlineInt( csvFile );
@@ -93,7 +93,7 @@ StatsDatabase::StatsDatabase( const std::string& filename )
 		touches = getlineInt( csvFile );
 		totalTD = getlineInt( csvFile );
 
-    	std::getline( csvFile, buffer, ',' );
+		std::getline( csvFile, buffer, ',' );
 
 		totalYards = getlineInt( csvFile );
 
@@ -149,7 +149,7 @@ StatsDatabase::StatsDatabase( const std::string& filename )
 			totalTD,
 			totalYards,
 			opponent,
-            0
+			0
 		};
 
 		// Add to this player's average
@@ -180,11 +180,11 @@ StatsDatabase::StatsDatabase( const std::string& filename )
 		games.push_back( game );
 
 		// For debugging
-        if ( i++ % 10000 == 9999 )
-        	std::cout << "Loaded " << i << " games" << std::endl;
-    }
+		if ( i++ % 10000 == 9999 )
+			std::cout << "Loaded " << i << " games" << std::endl;
+	}
 
-    std::cout << "Done! (" << i << " games total, " << players.size() << " players total)" << std::endl;
+	std::cout << "Done! (" << i << " games total, " << players.size() << " players total)" << std::endl;
 }
 
 // Deallocate dynamic memory from the heap
@@ -277,7 +277,7 @@ std::vector<GameStats*> StatsDatabase::extractGames( int count )
 
 			// Swap the values
 			// Then, prepare the pointers for the next iteration
-            GameStats* temp = gameHeap[ parent ];
+			GameStats* temp = gameHeap[ parent ];
 			gameHeap[ parent ] = gameHeap[ minChild ];
 			gameHeap[ minChild ] = temp;
 			parent = minChild;
@@ -296,7 +296,7 @@ void StatsDatabase::sortPlayers( std::vector<int>& weightMatrix )
 		player.second->score = getPlayerScore( player.second, weightMatrix );
 
 	// Then, recursively run merge sort
-    mergeSortPlayers( 0, players.size() - 1 );
+	mergeSortPlayers( 0, players.size() - 1 );
 }
 
 // Recursively calls merge sort on the players vector
